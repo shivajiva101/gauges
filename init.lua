@@ -14,7 +14,7 @@ local vector_distance = vector.distance
 local function add_gauge(player)
 	if player and player:is_player() then
 		local entity = minetest.add_entity(player:get_pos(), "gauges:hp_bar")
-		local height = 18
+		local height = 19
 
 		-- Check for Minetest 0.4.17 and adjust the entity height if needed
 		-- (The entity height offset was changed in Minetest 5.0.0.)
@@ -28,9 +28,17 @@ local function add_gauge(player)
 	end
 end
 
+-- API
 gauges = {}
+local members = {}
 gauges.add = function(player)
+	members[player:get_player_name()] = true
 	add_gauge(player)
+end
+
+gauges.remove = function(name)
+	if not gauges.player[name] then return end
+	members[name] = nil
 end
 
 minetest.register_entity("gauges:hp_bar", {
@@ -51,7 +59,7 @@ minetest.register_entity("gauges:hp_bar", {
 			gauge:remove()
 			add_gauge(player)
 			return
-		elseif not eggwars.player[player:get_player_name] then
+		elseif not members[player:get_player_name()] then
 			gauge:remove()
 			return
 		end
