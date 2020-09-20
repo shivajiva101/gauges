@@ -14,7 +14,7 @@ local vector_distance = vector.distance
 local function add_gauge(player)
 	if player and player:is_player() then
 		local entity = minetest.add_entity(player:get_pos(), "gauges:hp_bar")
-		local height = 19
+		local height = 18
 
 		-- Check for Minetest 0.4.17 and adjust the entity height if needed
 		-- (The entity height offset was changed in Minetest 5.0.0.)
@@ -26,6 +26,11 @@ local function add_gauge(player)
 		entity:set_attach(player, "", {x=0, y=height, z=0}, {x=0, y=0, z=0})
 		entity:get_luaentity().wielder = player
 	end
+end
+
+gauges = {}
+gauges.add = function(player)
+	add_gauge(player)
 end
 
 minetest.register_entity("gauges:hp_bar", {
@@ -46,6 +51,9 @@ minetest.register_entity("gauges:hp_bar", {
 			gauge:remove()
 			add_gauge(player)
 			return
+		elseif not eggwars.player[player:get_player_name] then
+			gauge:remove()
+			return
 		end
 
 		local hp = player:get_hp() <= 20 and player:get_hp() or 20
@@ -64,6 +72,6 @@ minetest.register_entity("gauges:hp_bar", {
 	end
 })
 
-minetest.register_on_joinplayer(function(player)
-	minetest.after(1, add_gauge, player)
-end)
+-- minetest.register_on_joinplayer(function(player)
+-- 	minetest.after(1, add_gauge, player)
+-- end)
